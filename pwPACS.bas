@@ -1,27 +1,26 @@
-Attribute VB_Name = "pwPACS"
-' Physical Access Control System (Система Управления Контролем Доступа)
-' Для Сервера СКУД РПК (развернут на локальной машине секретаря)
-' Используется совместно с парсером JSON JsonConverter.vb (' tools/references = Mivrosoft Scripting Runtime)
-' Вся работа по протоколу REST API ProxWay
+' Physical Access Control System (РЎРёСЃС‚РµРјР° РЈРїСЂР°РІР»РµРЅРёСЏ РљРѕРЅС‚СЂРѕР»РµРј Р”РѕСЃС‚СѓРїР°)
+' Р”Р»СЏ РЎРµСЂРІРµСЂР° РЎРљРЈР” Р РџРљ (СЂР°Р·РІРµСЂРЅСѓС‚ РЅР° Р»РѕРєР°Р»СЊРЅРѕР№ РјР°С€РёРЅРµ СЃРµРєСЂРµС‚Р°СЂСЏ)
+' РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ СЃРѕРІРјРµСЃС‚РЅРѕ СЃ РїР°СЂСЃРµСЂРѕРј JSON JsonConverter.vb (' tools/references = Mivrosoft Scripting Runtime)
+' Р’СЃСЏ СЂР°Р±РѕС‚Р° РїРѕ РїСЂРѕС‚РѕРєРѕР»Сѓ REST API ProxWay
 ' http://localhost:40001/json/help
 
 Option Explicit
 
-Const srvHost = "localhost" ' "rpk-342"  ' "localhost" ' "rpk-342" '"localhost" '"rpk-342" ' "localhost" '"rpk-342"      'сервер
-Const srvLogint = "web_admin"               'логин
-Const srvPassword = "ric"                   'пароль
+Const srvHost = "localhost" ' "rpk-342"  ' "localhost" ' "rpk-342" '"localhost" '"rpk-342" ' "localhost" '"rpk-342"      'СЃРµСЂРІРµСЂ
+Const srvLogint = "web_admin"               'Р»РѕРіРёРЅ
+Const srvPassword = "ric"                   'РїР°СЂРѕР»СЊ
 
 '----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'попытка авторизации на сервере
+'РїРѕРїС‹С‚РєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё РЅР° СЃРµСЂРІРµСЂРµ
 '----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-' возврат - строка UserSID или если неудачно - пустая строка
+' РІРѕР·РІСЂР°С‚ - СЃС‚СЂРѕРєР° UserSID РёР»Рё РµСЃР»Рё РЅРµСѓРґР°С‡РЅРѕ - РїСѓСЃС‚Р°СЏ СЃС‚СЂРѕРєР°
 Private Function connectRestApi() 'string
   Dim pass, pointHostName, req, ret, json
    ret = ""
 '   pass = UCase(GetHash(UCase(GetHash(UCase(GetHash(srvPassword) + "F593B01C562548C6B7A31B30884BDE53")))))
    pass = pwHash.MD5_string(pwHash.MD5_string(pwHash.MD5_string(srvPassword) + "F593B01C562548C6B7A31B30884BDE53"))
 
- '-------------авторизация
+ '-------------Р°РІС‚РѕСЂРёР·Р°С†РёСЏ
    pointHostName = "Authenticate"
    req = "{" & _
          """PasswordHash"":""" & pass & """, " & _
@@ -37,12 +36,12 @@ Private Function connectRestApi() 'string
 End Function
 
 '----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'получить внутренний id пользователя СКУД ProxWay
+'РїРѕР»СѓС‡РёС‚СЊ РІРЅСѓС‚СЂРµРЅРЅРёР№ id РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РЎРљРЈР” ProxWay
 '----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-' idRic - id хвостик Лоции или Табельный номер пользователя в ProxWay
-' userName - ФИО пользоватея (допускается использование маски через символ %) скорее всего в формате SQL для функции Like
-' idExcel - id пользователя в служебной базе РПК - учет рабочего времени
-' возврат - id (Token) пользователя системы ProxWay - или в случае неудачи - пустая строка
+' idRic - id С…РІРѕСЃС‚РёРє Р›РѕС†РёРё РёР»Рё РўР°Р±РµР»СЊРЅС‹Р№ РЅРѕРјРµСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ ProxWay
+' userName - Р¤РРћ РїРѕР»СЊР·РѕРІР°С‚РµСЏ (РґРѕРїСѓСЃРєР°РµС‚СЃСЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РјР°СЃРєРё С‡РµСЂРµР· СЃРёРјРІРѕР» %) СЃРєРѕСЂРµРµ РІСЃРµРіРѕ РІ С„РѕСЂРјР°С‚Рµ SQL РґР»СЏ С„СѓРЅРєС†РёРё Like
+' idExcel - id РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ СЃР»СѓР¶РµР±РЅРѕР№ Р±Р°Р·Рµ Р РџРљ - СѓС‡РµС‚ СЂР°Р±РѕС‡РµРіРѕ РІСЂРµРјРµРЅРё
+' РІРѕР·РІСЂР°С‚ - id (Token) РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ СЃРёСЃС‚РµРјС‹ ProxWay - РёР»Рё РІ СЃР»СѓС‡Р°Рµ РЅРµСѓРґР°С‡Рё - РїСѓСЃС‚Р°СЏ СЃС‚СЂРѕРєР°
 Private Function GetUserIdProxWayByName(idRic, userName, idExcel) 'infoArr
   Dim info, req, ret, json, UserSID, pointHostName, usersInfo, userInfo, i
   Dim pwUserID, count, msg
@@ -52,7 +51,7 @@ Private Function GetUserIdProxWayByName(idRic, userName, idExcel) 'infoArr
    UserSID = connectRestApi()
    If Len(UserSID) > 0 Then
  
- '-------------список пользователей
+ '-------------СЃРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
      pointHostName = "EmployeeGetList"
      req = "{" & _
            """Language"":""ru"", " & _
@@ -74,10 +73,10 @@ Private Function GetUserIdProxWayByName(idRic, userName, idExcel) 'infoArr
 
      Select Case count
        Case 0
-         msg = "совпадений не обнаружено"
+         msg = "СЃРѕРІРїР°РґРµРЅРёР№ РЅРµ РѕР±РЅР°СЂСѓР¶РµРЅРѕ"
        Case Else
          If count > 1 Then
-           msg = "обнаружено более одного пользователя" & vbCrLf & "будет использован последний"
+           msg = "РѕР±РЅР°СЂСѓР¶РµРЅРѕ Р±РѕР»РµРµ РѕРґРЅРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ" & vbCrLf & "Р±СѓРґРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°РЅ РїРѕСЃР»РµРґРЅРёР№"
          End If
          
          Dim item As Object                ' Reference to each JSON Object found in the "data" property.
@@ -87,33 +86,33 @@ Private Function GetUserIdProxWayByName(idRic, userName, idExcel) 'infoArr
      
          i = 0
          For Each userInfo In json("Employee")
-           pwUserID = userInfo("Token")                         'id юзера
+           pwUserID = userInfo("Token")                         'id СЋР·РµСЂР°
               
-           If Len(idRic) > 0 Then                               'если нужна проверка на id сотрудника из Лоции (табельный номер в ProxWay)
+           If Len(idRic) > 0 Then                               'РµСЃР»Рё РЅСѓР¶РЅР° РїСЂРѕРІРµСЂРєР° РЅР° id СЃРѕС‚СЂСѓРґРЅРёРєР° РёР· Р›РѕС†РёРё (С‚Р°Р±РµР»СЊРЅС‹Р№ РЅРѕРјРµСЂ РІ ProxWay)
              If idRic <> CStr(userInfo("EmployeeNumber")) Then
                pwUserID = ""
-               msg = "совпадений по табельному номеру сотрудника" & vbCrLf & "не обнаружено"
+               msg = "СЃРѕРІРїР°РґРµРЅРёР№ РїРѕ С‚Р°Р±РµР»СЊРЅРѕРјСѓ РЅРѕРјРµСЂСѓ СЃРѕС‚СЂСѓРґРЅРёРєР°" & vbCrLf & "РЅРµ РѕР±РЅР°СЂСѓР¶РµРЅРѕ"
                Exit For
              End If
            End If
        
-           If Len(idExcel) > 0 Then                             'если нужна проверка на idExcel сотрудника из Excel базы учета рабочего времени (доп поля в ProxWay)
-             Set rows = userInfo("AdditionalFields")            'получить коллекцию
+           If Len(idExcel) > 0 Then                             'РµСЃР»Рё РЅСѓР¶РЅР° РїСЂРѕРІРµСЂРєР° РЅР° idExcel СЃРѕС‚СЂСѓРґРЅРёРєР° РёР· Excel Р±Р°Р·С‹ СѓС‡РµС‚Р° СЂР°Р±РѕС‡РµРіРѕ РІСЂРµРјРµРЅРё (РґРѕРї РїРѕР»СЏ РІ ProxWay)
+             Set rows = userInfo("AdditionalFields")            'РїРѕР»СѓС‡РёС‚СЊ РєРѕР»Р»РµРєС†РёСЋ
              If rows.count > 0 Then
-               For row = 1 To rows.count Step 1                   'пройти по коллекции
-                 Set item = rows.item(row)                        'получить объект из коллекции (JSON Array)
-                 Set data = item                                  'преобразовать его в словарь
-                 If data.Items(0) = "id базы учета рабочего времени (Excel)" Then 'проверить конкретное поле
+               For row = 1 To rows.count Step 1                   'РїСЂРѕР№С‚Рё РїРѕ РєРѕР»Р»РµРєС†РёРё
+                 Set item = rows.item(row)                        'РїРѕР»СѓС‡РёС‚СЊ РѕР±СЉРµРєС‚ РёР· РєРѕР»Р»РµРєС†РёРё (JSON Array)
+                 Set data = item                                  'РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ РµРіРѕ РІ СЃР»РѕРІР°СЂСЊ
+                 If data.Items(0) = "id Р±Р°Р·С‹ СѓС‡РµС‚Р° СЂР°Р±РѕС‡РµРіРѕ РІСЂРµРјРµРЅРё (Excel)" Then 'РїСЂРѕРІРµСЂРёС‚СЊ РєРѕРЅРєСЂРµС‚РЅРѕРµ РїРѕР»Рµ
                    If idExcel <> CStr(data.Items(1)) Then
                      pwUserID = ""
-                     msg = "совпадений не обнаружено"
+                     msg = "СЃРѕРІРїР°РґРµРЅРёР№ РЅРµ РѕР±РЅР°СЂСѓР¶РµРЅРѕ"
                      Exit For
                    End If
                  End If
                Next row
              Else
                pwUserID = ""
-               msg = "совпадений не обнаружено" & vbCrLf & "в базе ProxWay не настроены дополнительные поля сотрудника"
+               msg = "СЃРѕРІРїР°РґРµРЅРёР№ РЅРµ РѕР±РЅР°СЂСѓР¶РµРЅРѕ" & vbCrLf & "РІ Р±Р°Р·Рµ ProxWay РЅРµ РЅР°СЃС‚СЂРѕРµРЅС‹ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ СЃРѕС‚СЂСѓРґРЅРёРєР°"
                Exit For
              End If
            End If
@@ -121,15 +120,15 @@ Private Function GetUserIdProxWayByName(idRic, userName, idExcel) 'infoArr
          Next userInfo
      End Select
      If Len(msg) > 0 Then
-       MsgBox "Ошибка сопоставления пользователя" & vbCrLf & vbCrLf & _
-              " по параметрам запроса" & vbCrLf & _
-              "   ФИО сотрудника        : '" & userName & "'" & vbCrLf & _
-              "   id сотрудника из Лоции: '" & idRic & "'" & vbCrLf & _
-              "   id сотрудника из Excel: '" & idExcel & "'" & vbCrLf & _
-              vbCrLf & msg, vbOKCancel + vbInformation, "Пользователи СКУД ProwWay"
+       MsgBox "РћС€РёР±РєР° СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ" & vbCrLf & vbCrLf & _
+              " РїРѕ РїР°СЂР°РјРµС‚СЂР°Рј Р·Р°РїСЂРѕСЃР°" & vbCrLf & _
+              "   Р¤РРћ СЃРѕС‚СЂСѓРґРЅРёРєР°        : '" & userName & "'" & vbCrLf & _
+              "   id СЃРѕС‚СЂСѓРґРЅРёРєР° РёР· Р›РѕС†РёРё: '" & idRic & "'" & vbCrLf & _
+              "   id СЃРѕС‚СЂСѓРґРЅРёРєР° РёР· Excel: '" & idExcel & "'" & vbCrLf & _
+              vbCrLf & msg, vbOKCancel + vbInformation, "РџРѕР»СЊР·РѕРІР°С‚РµР»Рё РЎРљРЈР” ProwWay"
      End If
      
-    '-------------выход
+    '-------------РІС‹С…РѕРґ
      pointHostName = "Logout"
      req = "{""UserSID"":""" & UserSID & """}"
      ret = GetRestData("http://" & srvHost & ":40001/json/", pointHostName, req, 0)
@@ -141,24 +140,24 @@ Private Function GetUserIdProxWayByName(idRic, userName, idExcel) 'infoArr
 End Function
 
 '----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'запрос к серверу на счет входа выхода конкретного сотрудника в/из офиса, и получение ответа
+'Р·Р°РїСЂРѕСЃ Рє СЃРµСЂРІРµСЂСѓ РЅР° СЃС‡РµС‚ РІС…РѕРґР° РІС‹С…РѕРґР° РєРѕРЅРєСЂРµС‚РЅРѕРіРѕ СЃРѕС‚СЂСѓРґРЅРёРєР° РІ/РёР· РѕС„РёСЃР°, Рё РїРѕР»СѓС‡РµРЅРёРµ РѕС‚РІРµС‚Р°
 '----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-' pwIdUser - id пользователя ProxWay
-' findDate - день запроса в формате "уууу.mm.dd" (поиск будет произведен на указанную дату в диапазоне времени от 00:00:00 до 23:59:59)
-' возврат - одномерный массив - первое значение - время первого входа (если есть), второе значение - время последнего выхода (если есть)
+' pwIdUser - id РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ ProxWay
+' findDate - РґРµРЅСЊ Р·Р°РїСЂРѕСЃР° РІ С„РѕСЂРјР°С‚Рµ "СѓСѓСѓСѓ.mm.dd" (РїРѕРёСЃРє Р±СѓРґРµС‚ РїСЂРѕРёР·РІРµРґРµРЅ РЅР° СѓРєР°Р·Р°РЅРЅСѓСЋ РґР°С‚Сѓ РІ РґРёР°РїР°Р·РѕРЅРµ РІСЂРµРјРµРЅРё РѕС‚ 00:00:00 РґРѕ 23:59:59)
+' РІРѕР·РІСЂР°С‚ - РѕРґРЅРѕРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ - РїРµСЂРІРѕРµ Р·РЅР°С‡РµРЅРёРµ - РІСЂРµРјСЏ РїРµСЂРІРѕРіРѕ РІС…РѕРґР° (РµСЃР»Рё РµСЃС‚СЊ), РІС‚РѕСЂРѕРµ Р·РЅР°С‡РµРЅРёРµ - РІСЂРµРјСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РІС‹С…РѕРґР° (РµСЃР»Рё РµСЃС‚СЊ)
 Function CheckPointPWTime(pwIdUser, findDateTime)
   Dim res(1), pass, i, pointHostName, pwDataTime
   Dim url, req, ret, json, UserSID
   Dim usersInfo As Variant
   Dim userInfo As Dictionary
     
-   res(0) = ""                      'время первого входа
-   res(1) = ""                      'время последнего выхода
+   res(0) = ""                      'РІСЂРµРјСЏ РїРµСЂРІРѕРіРѕ РІС…РѕРґР°
+   res(1) = ""                      'РІСЂРµРјСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РІС‹С…РѕРґР°
 
    UserSID = connectRestApi()
    If Len(UserSID) > 0 Then
 
- '-------------не знаю что это такое
+ '-------------РЅРµ Р·РЅР°СЋ С‡С‚Рѕ СЌС‚Рѕ С‚Р°РєРѕРµ
  '    pointHostName = "AdditionalEventFieldGetList"
  '    req = "{" & _
  '          """Language"":""ru"", " & _
@@ -169,7 +168,7 @@ Function CheckPointPWTime(pwIdUser, findDateTime)
  '          "}"
  '    ret = GetRestData("http://" & srvHost & ":40001/json/", pointHostName, req, 1)
 
- '-------------прочитать журнал событий
+ '-------------РїСЂРѕС‡РёС‚Р°С‚СЊ Р¶СѓСЂРЅР°Р» СЃРѕР±С‹С‚РёР№
      pointHostName = "EventGetList"
 '     url = "http://" & srvHost & ":40001/json/EventGetListV2"
      req = "{" & _
@@ -182,9 +181,9 @@ Function CheckPointPWTime(pwIdUser, findDateTime)
            """IssuedFrom"":""" & "\/Date(" & CStr(pwUTC.ConvertToUnixTimeStamp(findDateTime & " 00:00:00", 3)) & ")\/" & """, " & _
            """IssuedTo"":""" & "\/Date(" & CStr(pwUTC.ConvertToUnixTimeStamp(findDateTime & " 23:59:59", 3)) & ")\/" & """, " & _
            "}"
-'           """Employees"":[], "  'массив id сотрудников [1785, 1809] Ечина и Зайцев
-'     ret = GetRestData("http://" & srvHost & ":40001/json/", pointHostName, req, 0) '0-не печатать логи
-     ret = GetRestData("http://" & srvHost & ":40001/json/", pointHostName, req, 1) '1- печатать логи
+'           """Employees"":[], "  'РјР°СЃСЃРёРІ id СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ [1785, 1809] Р•С‡РёРЅР° Рё Р—Р°Р№С†РµРІ
+'     ret = GetRestData("http://" & srvHost & ":40001/json/", pointHostName, req, 0) '0-РЅРµ РїРµС‡Р°С‚Р°С‚СЊ Р»РѕРіРё
+     ret = GetRestData("http://" & srvHost & ":40001/json/", pointHostName, req, 1) '1- РїРµС‡Р°С‚Р°С‚СЊ Р»РѕРіРё
    
      Set json = pwJsonConverter.ParseJSON(ret)
 '     MsgBox json("Event").count
@@ -192,22 +191,22 @@ Function CheckPointPWTime(pwIdUser, findDateTime)
      ReDim usersInfo(json("Event").count, 6)
      i = 0
      For Each userInfo In json("Event")
-       If Len(CStr(userInfo("CardCode"))) > 0 Then                      'если событие прохода по ключу
-         ' =userInfo("CardCode")                                        'код карты
+       If Len(CStr(userInfo("CardCode"))) > 0 Then                      'РµСЃР»Рё СЃРѕР±С‹С‚РёРµ РїСЂРѕС…РѕРґР° РїРѕ РєР»СЋС‡Сѓ
+         ' =userInfo("CardCode")                                        'РєРѕРґ РєР°СЂС‚С‹
 '         Select Case CInt(userInfo("Sender")("Token"))
-'           Case 5356                                                    ':5356,"Name":"Офис РПК - вход"
-'           Case 5357                                                    ':5357,"Name":"Офис РПК - выход"
+'           Case 5356                                                    ':5356,"Name":"РћС„РёСЃ Р РџРљ - РІС…РѕРґ"
+'           Case 5357                                                    ':5357,"Name":"РћС„РёСЃ Р РџРљ - РІС‹С…РѕРґ"
 '         End Select
          
-         Select Case CStr(userInfo("Message")("Name"))                  'время события в системе
-           Case "Вход совершен"                                         'или "Вход разрешен"
+         Select Case CStr(userInfo("Message")("Name"))                  'РІСЂРµРјСЏ СЃРѕР±С‹С‚РёСЏ РІ СЃРёСЃС‚РµРјРµ
+           Case "Р’С…РѕРґ СЃРѕРІРµСЂС€РµРЅ"                                         'РёР»Рё "Р’С…РѕРґ СЂР°Р·СЂРµС€РµРЅ"
              pwDataTime = CDate(pwUTC.parseJSONdate(userInfo("Issued"), utcOffset))
              If res(0) = "" Then
                res(0) = pwDataTime
              ElseIf pwDataTime < CDate(res(0)) Then
                res(0) = pwDataTime
              End If
-           Case "Выход совершен"                                        'или "Выход разрешен"
+           Case "Р’С‹С…РѕРґ СЃРѕРІРµСЂС€РµРЅ"                                        'РёР»Рё "Р’С‹С…РѕРґ СЂР°Р·СЂРµС€РµРЅ"
              pwDataTime = CDate(pwUTC.parseJSONdate(userInfo("Issued"), utcOffset))
              If res(1) = "" Then
                res(1) = pwDataTime
@@ -215,19 +214,19 @@ Function CheckPointPWTime(pwIdUser, findDateTime)
                res(1) = pwDataTime
              End If
                        
-'           usersInfo(i, 0) = userInfo("Token")                      'id события
-'           usersInfo(i, 1) = utc.parseJSONdate(userInfo("Issued"), utcOffset)      'время события
-'           usersInfo(i, 2) = userInfo("User")("Token")              'id юзера
-'           usersInfo(i, 3) = userInfo("User")("EmployeeNumber")     'табельный номер юзера
-'           usersInfo(i, 4) = userInfo("User")("Name")               'имя юзера
-'           usersInfo(i, 5) = userInfo("Message")("Token")           'id события
-'           usersInfo(i, 5) = userInfo("Message")("Name")            'наименование события
+'           usersInfo(i, 0) = userInfo("Token")                      'id СЃРѕР±С‹С‚РёСЏ
+'           usersInfo(i, 1) = utc.parseJSONdate(userInfo("Issued"), utcOffset)      'РІСЂРµРјСЏ СЃРѕР±С‹С‚РёСЏ
+'           usersInfo(i, 2) = userInfo("User")("Token")              'id СЋР·РµСЂР°
+'           usersInfo(i, 3) = userInfo("User")("EmployeeNumber")     'С‚Р°Р±РµР»СЊРЅС‹Р№ РЅРѕРјРµСЂ СЋР·РµСЂР°
+'           usersInfo(i, 4) = userInfo("User")("Name")               'РёРјСЏ СЋР·РµСЂР°
+'           usersInfo(i, 5) = userInfo("Message")("Token")           'id СЃРѕР±С‹С‚РёСЏ
+'           usersInfo(i, 5) = userInfo("Message")("Name")            'РЅР°РёРјРµРЅРѕРІР°РЅРёРµ СЃРѕР±С‹С‚РёСЏ
          End Select
        End If
        i = i + 1
      Next userInfo
 
- '-------------выход
+ '-------------РІС‹С…РѕРґ
      pointHostName = "Logout"
      req = "{""UserSID"":""" & UserSID & """}"
      ret = GetRestData("http://" & srvHost & ":40001/json/", pointHostName, req, 0)
@@ -241,7 +240,7 @@ Sub printUserList()
    UserSID = connectRestApi()
    If Len(UserSID) > 0 Then
    
- '-------------список пользователей
+ '-------------СЃРїРёСЃРѕРє РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
      pointHostName = "EmployeeGetList"
      req = "{" & _
            """Language"":""ru"", " & _
@@ -264,25 +263,25 @@ Sub printUserList()
      i = 0
      For Each userInfo In json("Employee")
      'userInfo("AdditionalFields")("Name")
-       usersInfo(i, 0) = userInfo("Token")                        'id юзера
-       usersInfo(i, 1) = userInfo("Name")                         'имя юзера
-       usersInfo(i, 2) = userInfo("CardCount")                    'количество пропусков юзера
-       usersInfo(i, 3) = userInfo("DepartmentToken")              'id группы юзера
-       usersInfo(i, 4) = userInfo("DepartmentName")               'имя группы юзера
-       usersInfo(i, 5) = userInfo("Post")                         'должность юзера
-       usersInfo(i, 6) = userInfo("Email")                        'Email юзера
-       usersInfo(i, 7) = userInfo("EmployeeNumber")               'табельный номер юзера
-       usersInfo(i, 8) = pwUTC.parseJSONdate(userInfo("LastModified"), utcOffset)  'дата изменения данных
+       usersInfo(i, 0) = userInfo("Token")                        'id СЋР·РµСЂР°
+       usersInfo(i, 1) = userInfo("Name")                         'РёРјСЏ СЋР·РµСЂР°
+       usersInfo(i, 2) = userInfo("CardCount")                    'РєРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРѕРїСѓСЃРєРѕРІ СЋР·РµСЂР°
+       usersInfo(i, 3) = userInfo("DepartmentToken")              'id РіСЂСѓРїРїС‹ СЋР·РµСЂР°
+       usersInfo(i, 4) = userInfo("DepartmentName")               'РёРјСЏ РіСЂСѓРїРїС‹ СЋР·РµСЂР°
+       usersInfo(i, 5) = userInfo("Post")                         'РґРѕР»Р¶РЅРѕСЃС‚СЊ СЋР·РµСЂР°
+       usersInfo(i, 6) = userInfo("Email")                        'Email СЋР·РµСЂР°
+       usersInfo(i, 7) = userInfo("EmployeeNumber")               'С‚Р°Р±РµР»СЊРЅС‹Р№ РЅРѕРјРµСЂ СЋР·РµСЂР°
+       usersInfo(i, 8) = pwUTC.parseJSONdate(userInfo("LastModified"), utcOffset)  'РґР°С‚Р° РёР·РјРµРЅРµРЅРёСЏ РґР°РЅРЅС‹С…
        i = i + 1
      Next userInfo
    
-    '-------------выход
+    '-------------РІС‹С…РѕРґ
      pointHostName = "Logout"
      req = "{""UserSID"":""" & UserSID & """}"
      ret = GetRestData("http://" & srvHost & ":40001/json/", pointHostName, req, 0)
    
      Set json = Nothing
-'вывести на лист
+'РІС‹РІРµСЃС‚Рё РЅР° Р»РёСЃС‚
      Dim row, col
      row = 5
      col = 2
@@ -303,13 +302,13 @@ Sub printUserList()
 End Sub
 
 '----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-'получить внутренний id пользователя СКУД ProxWay
+'РїРѕР»СѓС‡РёС‚СЊ РІРЅСѓС‚СЂРµРЅРЅРёР№ id РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РЎРљРЈР” ProxWay
 '----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-' idRic - id хвостик Лоции или Табельный номер пользователя в ProxWay
-' userName - ФИО пользоватея (допускается использование маски через символ %) скорее всего в формате SQL для функции Like
-' idExcel - id пользователя в служебной базе РПК - учет рабочего времени
-' passTime - запрашиваемая дата прохода
-' возврат - массив дат вход/выход
+' idRic - id С…РІРѕСЃС‚РёРє Р›РѕС†РёРё РёР»Рё РўР°Р±РµР»СЊРЅС‹Р№ РЅРѕРјРµСЂ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ ProxWay
+' userName - Р¤РРћ РїРѕР»СЊР·РѕРІР°С‚РµСЏ (РґРѕРїСѓСЃРєР°РµС‚СЃСЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РјР°СЃРєРё С‡РµСЂРµР· СЃРёРјРІРѕР» %) СЃРєРѕСЂРµРµ РІСЃРµРіРѕ РІ С„РѕСЂРјР°С‚Рµ SQL РґР»СЏ С„СѓРЅРєС†РёРё Like
+' idExcel - id РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ СЃР»СѓР¶РµР±РЅРѕР№ Р±Р°Р·Рµ Р РџРљ - СѓС‡РµС‚ СЂР°Р±РѕС‡РµРіРѕ РІСЂРµРјРµРЅРё
+' passTime - Р·Р°РїСЂР°С€РёРІР°РµРјР°СЏ РґР°С‚Р° РїСЂРѕС…РѕРґР°
+' РІРѕР·РІСЂР°С‚ - РјР°СЃСЃРёРІ РґР°С‚ РІС…РѕРґ/РІС‹С…РѕРґ
 Function cheskPassProxWay(idRic, userName, idExcel, passTime) ' array
   Dim pwUserID, timeArr
   
