@@ -1,8 +1,8 @@
-# restAPI-ProwWay-PACS
+# restAPI-ProxWay-PACS
 Интеграция оборудования СКУД (Система Контроля Управления Доступом)
 ProxWay по REST API на VBscript(VBA Excel) через REST API
 
-Оборудование и софт от ProxWay https://proxway-ble.ru/
+Оборудование и софт от ProXWay https://proxway-ble.ru/
 
 софт - proxway-ip 3.057.7055 
 оборудование - контроллер PW-400v3 + считыватели PW-Mini Multi BLE  
