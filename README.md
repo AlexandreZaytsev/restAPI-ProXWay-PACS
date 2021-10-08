@@ -20,7 +20,7 @@ ProxWay по REST API на VBscript(VBA Excel) через REST API
 - http:// host name :40001/json/EmployeeGetList
 3. запрос событий на дату (фильтр из п.п. 2)
 - http:// host name :40001/json/EventGetList
-4. парсинг JSON через JsonConverter.bas
+4. парсинг JSON через JsonConverter.bas  
 *парсинг очень медленный (на словарях и коллекциях) - обязательно задавайте критерии фильтрации в запросе
 5. отключение от web сервиса (logout)
 - http:// host name :40001/json/Logout
