@@ -1,4 +1,4 @@
-# restAPI-ProwWay-PACS
+# restAPI-ProxWay-PACS
 Интеграция оборудования СКУД (Система Контроля Управления Доступом)
 ProxWay по REST API на VBscript(VBA Excel) через REST API
 
