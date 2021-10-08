@@ -14,10 +14,9 @@ ProxWay по REST API на VBscript(VBA Excel) через REST API
 1. авторизация на web сервисе (login)
 - http:// host name :40001/json/Authenticate
 2. получение id (token) пользователя по базовым полям
--- ФИО (синтаксис запроса аналогичный trasact sql like '%)
-и/или 
+-- ФИО (синтаксис запроса аналогичный trasact sql like '%) и/или    
 -- табельный номер
--- дополнительным ползовательским полям
+-- дополнительным пользовательским полям
 - http:// host name :40001/json/EmployeeGetList
 3. запрос событий на дату (фильтр из п.п. 2)
 - http:// host name :40001/json/EventGetList
